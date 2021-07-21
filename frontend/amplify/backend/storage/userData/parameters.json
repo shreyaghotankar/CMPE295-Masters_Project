@@ -1,0 +1,5 @@
+{
+    "tableName": "cmpe295-user-data",
+    "partitionKeyName": "email",
+    "partitionKeyType": "S"
+}

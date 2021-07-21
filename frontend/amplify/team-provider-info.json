@@ -19,6 +19,10 @@
         "S3Triggerdbc48504": {
           "deploymentBucketName": "amplify-amplify94ab886dc25c4-staging-235304-deployment",
           "s3Key": "amplify-builds/S3Triggerdbc48504-34647037664237703071-build.zip"
+        },
+        "userDataTrigger8be617c0": {
+          "deploymentBucketName": "amplify-amplify94ab886dc25c4-staging-235304-deployment",
+          "s3Key": "amplify-builds/userDataTrigger8be617c0-47646266594630557973-build.zip"
         }
       }
     }
