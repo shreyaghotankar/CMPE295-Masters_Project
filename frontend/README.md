@@ -2,6 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Configuration: 
+- node >= 10.16
+- npm >= 5.6s
+- node-sass [to use scss instead of plain css]
+- prop-types [to typecheck]
+- bootstrap
+
 ## Testing
 
 Jest library
@@ -50,7 +57,58 @@ To avoid specifying the profile in every command set the AWS_PROFILE environment
 ```
 export AWS_PROFILE=master_project
 ```
+##  Project Folder Structure
+-> components (holds all components by separate folders) \
+---> component-name1 \
+---> component-name2 \
+... \
+-> shared \
+---> icons (holds all icons for the project) \
+---> styles (holds all scss files for global styles and variables) 
+
+### Component Folder Structure
+
+*Folder name*: component-name
+*Files*:
+- component-name.js
+- component-name.test.js
+- component-name.module.scss
+
+**component-name.js**
+```javascript
+import React from "react";
+import PropTypes from 'prop-types'; // for typechecking
+
+import styles from './component-name.module.scss'; // for creating unique local class names
+
+function ComponentName (props) {
+    const {
+        propOne,
+        propTwo
+    } = props;
+
+    return (
+        <div>
+            {propOne}
+        </div>
+    )
+}
+
+ComponentName.propTypes = {
+    propOne: PropTypes.string, //type of the property should be specified
+    propTwo: PropTypes.bool
+}
+
+export default ComponentName;
+
+```
+
+
+## Styles
+
+To destinguish local vs global styles we are using Css Modules that automatically create a unique classname in the format `[filename]\_[classname]\_\_[hash]`
 
 ## References:
 
-[Configure AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) 
+[Configure AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) \
+[CSS Modules](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet)

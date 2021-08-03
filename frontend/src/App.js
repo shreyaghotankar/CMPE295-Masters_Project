@@ -3,6 +3,8 @@ import Amplify from "aws-amplify";
 import {AmplifyAuthenticator, AmplifySignIn, AmplifySignUp, AmplifySignOut} from "@aws-amplify/ui-react";
 import awsconfig from "./aws-exports";
 
+import MainPage from './components/main-page/main-page'
+
 Amplify.configure(awsconfig);
 
 const App = () => (
@@ -14,7 +16,7 @@ const App = () => (
           {
             type: "email",
             label: "Email",
-            placeholder: "email",
+            placeholder: "Email",
             inputProps: { required: true, autocomplete: "username" },
           },
           {
@@ -26,18 +28,19 @@ const App = () => (
           {
             type: "given_name",
             label: "Given Name",
-            placeholder: "first name",
+            placeholder: "First Name",
             inputProps: { required: true, autocomplete: "given_name" },
           },
           {
             type: "family_name",
             label: "Family Name",
-            placeholder: "last name",
+            placeholder: "Last Name",
             inputProps: { required: true, autocomplete: "family_name" },
           },
         ]} 
       />
       <AmplifySignIn slot="sign-in" usernameAlias="email" />
+      <MainPage />
     </AmplifyAuthenticator>
 );
 
