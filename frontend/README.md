@@ -1,70 +1,114 @@
-# Getting Started with Create React App
+## About React configurations
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### Configuration: 
+- node >= 10.16
+- npm >= 5.6s
+- node-sass [to use scss instead of plain css]
+- prop-types [to typecheck]
+- bootstrap
 
-In the project directory, you can run:
+## Testing
 
-### `npm start`
+Jest library
+`npm test`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Branching
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+ > ! Before you start always pull latest changes \
+ > `git pull`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+For each feature/bug or issue resolvment create a new branch 
 
-### `npm run build`
+`git checkout -b [branch name]`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Follow branch naming convention:
+[feature/bug/issue]/[name of the reature]-[author]
+Ex: feature/readme-az
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Amplify Setup
 
-### `npm run eject`
+```
+npm install -g @aws-amplify/cli
+amplify upgrade
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+AWS best practices suggest to create a new user for each project and grant granual permissions to it. 
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+After the user is create in AWS console and creadentials for CLI (access key Id and secret access key) are recieved, aws cli should be cofigured on a local machine. 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Run the command to create a new profile and you will be prompted to add credentials: 
+```
+aws configure --profile [new_profile_name]
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Output: 
+```
+AWS Access Key ID [None]: SOMEKEYID
+AWS Secret Access Key [None]: SoMeSeCrEtHeRe
+Default region name [None]: us-west-2 // or any other region of your choice 
+Default output format [None]: json // or any other format
+```
 
-## Learn More
+To avoid specifying the profile in every command set the AWS_PROFILE environment variable: 
+```
+export AWS_PROFILE=master_project
+```
+##  Project Folder Structure
+-> components (holds all components by separate folders) \
+---> component-name1 \
+---> component-name2 \
+... \
+-> shared \
+---> icons (holds all icons for the project) \
+---> styles (holds all scss files for global styles and variables) 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Component Folder Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+*Folder name*: component-name
+*Files*:
+- component-name.js
+- component-name.test.js
+- component-name.module.scss
 
-### Code Splitting
+**component-name.js**
+```javascript
+import React from "react";
+import PropTypes from 'prop-types'; // for typechecking
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+import styles from './component-name.module.scss'; // for creating unique local class names
 
-### Analyzing the Bundle Size
+function ComponentName (props) {
+    const {
+        propOne,
+        propTwo
+    } = props;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+    return (
+        <div>
+            {propOne}
+        </div>
+    )
+}
 
-### Making a Progressive Web App
+ComponentName.propTypes = {
+    propOne: PropTypes.string, //type of the property should be specified
+    propTwo: PropTypes.bool
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+export default ComponentName;
 
-### Advanced Configuration
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
+## Styles
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+To destinguish local vs global styles we are using Css Modules that automatically create a unique classname in the format `[filename]\_[classname]\_\_[hash]`
 
-### `npm run build` fails to minify
+## References:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[Configure AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) \
+[CSS Modules](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet)
