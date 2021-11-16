@@ -8,51 +8,60 @@ import sys
 import numpy as np
 import pickle
 import pandas as pd
+import os
 from sklearn.cluster import KMeans
 import sklearn
 from collections import Counter
 from sklearn.metrics import pairwise_distances_argmin_min
 
-print('The scikit-learn version is {}.'.format(sklearn.__version__))
-s3 = boto3.client('s3')
-print('Loading function')
+# print('The scikit-learn version is {}.'.format(sklearn.__version__))
 
+# Defining S3 client
+s3 = boto3.client('s3')
+
+#Env varibles
+buc = os.environ['Bucket']
+rating = os.environ['Rating']
+result = os.environ['Result_matrix']
+cluster_map_avg = os.environ['cluster_map_avg']
+top_bottom_rating = os.environ['Top_bottom_rating']
+upp = os.environ['upper']
+low = os.environ['lower']
+upper_model = os.environ['upper_model']
+lower_model = os.environ['lower_model']
+
+#Defining the lower and upper attribute list
+lower_att=['Unnamed: 0', 't_floral', 't_stripe', 't_dot', 'f_denim', 'f_leather','f_cotton', 'f_knit', 'f_pleated', 's_fit', 's_pencil', 's_midi','s_mini', 's_maxi', 'p_zipper']
+upper_att=['Unnamed: 0', 't_floral', 't_stripe', 't_dot', 'f_lace', 'f_denim','f_chiffon', 'f_cotton', 'f_leather', 'f_fur', 'p_sleeveless','p_long-sleeve', 'p_collar', 'p_pocket', 'p_v-neck', 'p_button','p_hooded', 'p_zipper']
+    
 citae_dic_lower={}
 citae_dic_upper={}
     
 def load_csv_files(fname):
-    buc = 's3-store-model'
-    k =fname
-    csvfile = s3.get_object(Bucket=buc, Key=k)
+    csvfile = s3.get_object(Bucket=buc, Key=fname)
     df=pd.read_csv(csvfile['Body'])
     return df
 
 def load_model(modelname):
     s3 = boto3.resource('s3')
-    model = pickle.loads(s3.Bucket("s3-store-model").Object(modelname).get()['Body'].read())
+    model = pickle.loads(s3.Bucket(buc).Object(modelname).get()['Body'].read())
     return model
  
 ### helper function for collaborative filtering  
 def helper(clusterIndex, topType):
-    df_ratings_clean = load_csv_files('df_ratings_clean.csv')
-    print("df_ratings_clean:", df_ratings_clean)
-    
+    df_ratings_clean = load_csv_files(rating)
+    # print("df_ratings_clean:", df_ratings_clean)
     col_idx = clusterIndex
     print("col_idx: ", col_idx)
-    
-    resultant_matrix=load_csv_files("resultant_matrix.csv")
+    resultant_matrix=load_csv_files(result)
     print("resultant_matrix:", resultant_matrix)
-
     corr_mat = np.corrcoef(resultant_matrix)
-
     corr_specific = corr_mat[col_idx]
     print("corr_specific", corr_specific)
-    
     bottomMatchingTops=pd.DataFrame({'corr_specific':corr_specific, 'TopBottom_corr_specific': df_ratings_clean.columns})\
     .sort_values('corr_specific', ascending=False)\
     .head(10)
     bottomMatchingTops=bottomMatchingTops.TopBottom_corr_specific.iloc[0:2].tolist()
-
     if(topType == "upper"):
         return identifyCluster("upper", bottomMatchingTops)
     else:
@@ -60,8 +69,8 @@ def helper(clusterIndex, topType):
 
 ### helper function to get the top or bottom index
 def identifyCluster(topType, bottomMatchingTops):
-    cluster_mapping_average=load_csv_files('cluster_mapping_average.csv')
-    df_top_bottom_rating=load_csv_files('df_top_bottom_rating.csv')
+    cluster_mapping_average=load_csv_files(cluster_map_avg)
+    df_top_bottom_rating=load_csv_files(top_bottom_rating)
 
     if topType=="upper":
         clusterResult=findClusterRatings("upper", cluster_mapping_average, bottomMatchingTops, df_top_bottom_rating)
@@ -84,7 +93,6 @@ def identifyCluster(topType, bottomMatchingTops):
         
 def findClusterRatings(itemType,cluster_mapping_average, bottomMatchingTops, df_top_bottom_rating):
     clusterResult=[]
-    # print("bottomMatchingTops": bottomMatchingTops)
     if(itemType=="upper"):
         for i in bottomMatchingTops:
             topCluster=cluster_mapping_average[cluster_mapping_average["topClusterRating"]==int(i)].topClusterRating
@@ -118,15 +126,15 @@ def findClusterItems(itemType, clusterResult, df_top_bottom_rating):
 ## helper function to predict the attributes       
 def getAttributes(itemType, indexNumber):
     if itemType=="upper":
-        df_upper=load_csv_files("df_upper.csv")
-        df_lower=load_csv_files("df_lower.csv")
+        df_upper=load_csv_files(upp)
+        df_lower=load_csv_files(low)
         attributesIndex=checkIndex(itemType, indexNumber, df_upper, df_lower)
         if(len(attributesIndex) == 0):
             return ("lower", df_upper.sample(n=5))
         return("lower", df_upper.iloc[attributesIndex])
     elif itemType=="lower":
-        df_lower=load_csv_files("df_lower.csv")
-        df_upper=load_csv_files("df_upper.csv")
+        df_lower=load_csv_files(low)
+        df_upper=load_csv_files(upp)
         attributesIndex=checkIndex(itemType, indexNumber, df_upper, df_lower)
         if(len(attributesIndex) == 0):
             return ("upper", df_upper.sample(n=5))
@@ -147,12 +155,12 @@ def checkIndex(itemType, indexNumber, df_upper, df_lower):
 ## helper function to predict cluster
 def predictCluster(itemType, predValues):
     if itemType=="lower":
-        model=load_model("df_lower_kmeans.pkl")
+        model=load_model(lower_model)
         predCluster=helperPredictCluster(model, predValues)
         print("lowerpred", predCluster)
         return predCluster
     elif itemType=="upper":
-        model=load_model("df_upper_kmeans.pkl")
+        model=load_model(upper_model)
         predCluster=helperPredictCluster(model, predValues)
         print("upperpred", predCluster)
         return predCluster
@@ -190,9 +198,6 @@ def att_to_bin(event):
     cloth_att =event["attributes"]
     print(cloth_att, type(cloth_att))
     # att_list = cloth_att.split(",")
-    # print(att_list)
-    lower_att=['Unnamed: 0', 't_floral', 't_stripe', 't_dot', 'f_denim', 'f_leather','f_cotton', 'f_knit', 'f_pleated', 's_fit', 's_pencil', 's_midi','s_mini', 's_maxi', 'p_zipper']
-    upper_att=['Unnamed: 0', 't_floral', 't_stripe', 't_dot', 'f_lace', 'f_denim','f_chiffon', 'f_cotton', 'f_leather', 'f_fur', 'p_sleeveless','p_long-sleeve', 'p_collar', 'p_pocket', 'p_v-neck', 'p_button','p_hooded', 'p_zipper']
     bin_lis_u=[0 for _ in range(len(upper_att))]
     ind =0
     if cloth_type == "top":
@@ -220,7 +225,8 @@ def rem_zeros(bin_lis):
         only_attributes.append(rem)
     print("printing attributes after removing zero:", only_attributes)
     return only_attributes
-    # pass
+    
+    
 def rem_int(final_resp):
     no_int=[]
     for i in final_resp:
@@ -244,8 +250,6 @@ def ret_attributes(xy):
     print("xy after replacing",xy)
     bin_output = xy.values.tolist()
     print(" List of dataframe",bin_output)
-    # map_for_upper = {0:'Unnamed: 0', 1:'t_floral', 2:'t_stripe', 3:'t_dot', 4:'f_lace', 5:'f_denim',6:'f_chiffon', 7:'f_cotton', 8:'f_leather', 9:'f_fur', 10:'p_sleeveless',11:'p_long-sleeve', 12:'p_collar', 13:'p_pocket', 14:'p_v-neck', 15:'p_button',16:'p_hooded', 17:'p_zipper'}
-    # map_for_lower = {0:'Unnamed: 0', 1:'t_floral', 2:'t_stripe', 3:'t_dot', 4:'f_denim', 5:'f_leather',6:'f_cotton',7:'f_knit', 8:'f_pleated', 9:'s_fit', 10:'s_pencil', 11:'s_midi',12:'s_mini',13:'s_maxi', 14:'p_zipper'}
     return bin_output
     
 def lambda_handler(event, context):
@@ -257,7 +261,6 @@ def lambda_handler(event, context):
     print("predCluster", predCluster)
     clusterIndex=predCluster
     topType=type_mapping(event)
-
     itemIndex=helper(clusterIndex, topType)
     print("itemIndex", itemIndex)
     if(topType=="lower"):
@@ -267,22 +270,13 @@ def lambda_handler(event, context):
         y=getAttributes("lower", itemIndex)
         print("y[1]",y[1])
     attributes_list = ret_attributes(y[1])
-    
     final_resp = rem_zeros(attributes_list)
-    
     print("final response:",final_resp)
     removed = rem_int(final_resp)
     print("removed", removed)
     print("eventattr",  event["attributes"])
     final_response=checkIftheattributeexists(topType, event["attributes"], removed)
     print("final_response", final_response)
-    resp = final_response
-    print("resp:",resp)
-    new_dict = json.dumps(resp)
-    data = json.loads(new_dict)
-    # data.replace('\'," ")
-    # return data
     return json.dumps({"attributes": (final_response)})
     # return json.dumps({"attributes": attributes_list})
-    # return json.dumps({"attributes": ["p_zipper", "total"]})
     # return 200; 
