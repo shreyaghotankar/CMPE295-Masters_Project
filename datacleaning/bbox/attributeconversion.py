@@ -277,6 +277,5 @@ def lambda_handler(event, context):
     print("eventattr",  event["attributes"])
     final_response=checkIftheattributeexists(topType, event["attributes"], removed)
     print("final_response", final_response)
-    return json.dumps({"attributes": (final_response)})
-    # return json.dumps({"attributes": attributes_list})
+    return json.dumps({"attributes": (final_response)})S
     # return 200; 
