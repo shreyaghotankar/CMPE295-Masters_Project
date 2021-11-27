@@ -10,13 +10,15 @@
    ![](images/mltechniques.png)
 
 ## Machine Leaning Algorithm
+
+Data set used: https://liuziwei7.github.io/projects/DeepFashion.html
 ### Deep fashion data cleaning
 
 1. We start with the DeepFashion dataset with ~1K+ attributes and 280K+ entries, and clean and reduce the dimensionality of the dataset to less than 20 features each for upper and lower-body dress types. We also populate a dataset with ratings between matching upper and lower-body dress types to seed the model. Link to the data cleaning notebook is [here](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/dataframedeepfashion/AttributesCleaningDeepFashionDataset.ipynb)
    
 ### Collaborative filtering with K-means clustering
 
-1. Clustering the dataset by the above reduced attributes using K-Means, and creating a matrix of aggregate ratings between upper/lower-body dress types improves  model evaluation results. Link to the notebook is [here](https://colab.research.google.com/drive/1sB19cdBUqEyjBk7Y3W2O4VDz8Ph_V296?authuser=4#scrollTo=pbT1Vyty1TaZ)
+1. Clustering the dataset by the above reduced attributes using K-Means, and creating a matrix of aggregate ratings between upper/lower-body dress types improves  model evaluation results. Link to the notebook is [here](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/models/CF_final/CollaborativeFiltering.ipynb)
 
 2.  We then apply model-based Collaborative Filtering (CF) with SVD matrix factorization to compute the embeddings necessary to predict ratings between any upper/lower-body dress items.
    
@@ -26,8 +28,9 @@
    
    ![](images/algorithm.png)
 
-5. Link to the manually mapped images: [here](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/deployment/attributeconversion.py)
+5. Link to the manually mapped images: [here](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/manualmapped/automate_manual_mapping.ipynb)
 
+### AWS deployment of machine learning model
 
 
 
