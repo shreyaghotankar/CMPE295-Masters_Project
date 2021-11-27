@@ -10,6 +10,8 @@
    ![](images/mltechniques.png)
 
 ## Machine Leaning Algorithm
+
+Data set used: https://liuziwei7.github.io/projects/DeepFashion.html
 ### Deep fashion data cleaning
 
 1. We start with the DeepFashion dataset with ~1K+ attributes and 280K+ entries, and clean and reduce the dimensionality of the dataset to less than 20 features each for upper and lower-body dress types. We also populate a dataset with ratings between matching upper and lower-body dress types to seed the model. Link to the data cleaning notebook is [here](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/dataframedeepfashion/AttributesCleaningDeepFashionDataset.ipynb)
