@@ -32,6 +32,20 @@ Data set used: https://liuziwei7.github.io/projects/DeepFashion.html
 
 ### AWS deployment of machine learning model
 
+## Architecture Diagram for Machine Learning Deployment:
+   ![](images/ML-deployment.jpg)
+
+    We have developed the model on Google Colaboratory. We have used AWS services for ML Model deployment. Services include - AWS S3, Amazon API Gateway( RESTful API), and AWS Lambda function along with AWS Amplify.
+After the development of the model, we pickled the model and uploaded it to S3 bucket. Used Edge optimized API for the endpoint. When we get an event triggered from frontend of the application, Lambda function will load the saved model file from S3 and then the prediction will be returned based on the input.
+
+
+### Setup for Deployment : [Deployment Steps](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/deployment/Machine%20Learning%20Setup.docx)
+
+### Lamba Code : [here](https://github.com/shreyaghotankar/CMPE295-Masters_Project/blob/master/datacleaning/deployment/lambda_function.py)
+
+
+
+
 
 
 
